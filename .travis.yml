@@ -19,3 +19,16 @@ after_success:
   - docker push ktajpuri/multi-nginx
   - docker push ktajpuri/multi-server
   - docker push ktajpuri/multi-worker
+
+deploy:
+  edge: true
+  provider: elasticbeanstalk
+  region: "ap-south-1"
+  app: "multi-container-full-stack-docker"
+  env: "MultiContainerFullStackDocker-env"
+  bucket_name: "elasticbeanstalk-ap-south-1-675325355746"
+  bucket_path: "multi-container-full-stack-docker"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
