@@ -1,0 +1,32 @@
+sudo: required
+services: 
+  - docker
+
+before_install:
+  - docker build -t ktajpuri/multi-container-full-stack-docker -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true ktajpuri/multi-container-full-stack-docker npm run test
+
+after_success:
+  - docker build -t ktajpuri/multi-client ./client
+  - docker build -t ktajpuri/multi-nginx ./nginx
+  - docker build -t ktajpuri/multi-server ./server
+  - docker build -t ktajpuri/multi-worker ./worker
+
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push ktajpuri/multi-client
+  - docker push ktajpuri/multi-nginx
+  - docker push ktajpuri/multi-server
+  - docker push ktajpuri/multi-worker
+deploy:
+  provider: elasticbeanstalk
+  region: "ap-south-1"
+  app: "docker-react-cicd-boilerplate"
+  env: "DockerReactCicdBoilerplate-env"
+  bucket_name: "elasticbeanstalk-ap-south-1-675325355746"
+  bucket_path: "docker-react-cicd-boilerplate"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
