@@ -21,7 +21,6 @@ after_success:
   - docker push ktajpuri/multi-worker
 
 deploy:
-  edge: true
   provider: elasticbeanstalk
   region: "ap-south-1"
   app: "multi-container-full-stack-docker"
